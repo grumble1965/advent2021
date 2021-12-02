@@ -10,13 +10,15 @@ def main():
         horizontal, depth = 0, 0
 
         for line in inputfile.readlines():
-            command, distance = line.strip().split()
-            print(f"{command} {distance}")
-            if command == 'forward':
+            command_str, distance_str = line.strip().split()
+            distance = int(distance_str)
+
+            print(f"{command_str} {distance}")
+            if command_str == 'forward':
                 horizontal += int(distance)
-            elif command == 'down':
+            elif command_str == 'down':
                 depth += int(distance)
-            elif command == 'up':
+            elif command_str == 'up':
                 depth -= int(distance)
 
         print(f"{horizontal} {depth} -> {horizontal * depth}")
