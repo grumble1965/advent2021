@@ -99,6 +99,65 @@ def snail_addition(pair1, pair2):
 
 
 def snail_explode(pair):
+    # create the string representation and parse it
+    ss = pair.to_string
+    left = [idx for idx in range(len(ss)) if ss[idx] == '[']
+    right = [idx for idx in range(len(ss)) if ss[idx] == ']']
+    comma = [idx for idx in range(len(ss)) if ss[idx] == ',']
+    digits = [idx for idx in range(len(ss)) if ss[idx].isdigit()]
+    numbers, current_number_idx, current_number_start = [], None, None
+    for dd in digits:
+        if current_number_idx is None:
+            current_number_idx = dd
+            current_number_start = dd
+        elif dd - 1 == current_number_idx:
+            current_number_idx = dd
+        else:
+            numbers.append(current_number_start)
+            current_number_idx = dd
+            current_number_start = dd
+    if current_number_idx is not None:
+        numbers.append(current_number_start)
+    non_numbers = left + right + comma
+    # print(f"{left} {right} {comma} {digits} {numbers} {non_numbers}")
+
+    # find the explodable subpair
+    explode_start, explode_end, open_count = None, None, 0
+    for idx in range(len(ss)):
+        if ss[idx] == '[':
+            open_count += 1
+        elif ss[idx] == ']':
+            open_count -= 1
+        if open_count == 5:
+            explode_start = idx
+            explode_end = [jdx for jdx in right if jdx > explode_start][0]
+            break
+    # print(f"{ss[0:explode_start]} *{ss[explode_start:explode_end+1]}* {ss[explode_end+1:]}")
+    tmp_pair = ss[explode_start+1:explode_end].split(',')
+    lnum, rnum = int(tmp_pair[0]), int(tmp_pair[1])
+    print(f"left, right = {lnum}, {rnum}")
+
+    # find idx of next number to left
+    next_left_list = [jdx for jdx in numbers if jdx < explode_start]
+    next_left_idx = next_left_list[-1] if next_left_list else None
+    next_left = None
+    if next_left_idx is not None:
+        combined = [jdx for jdx in non_numbers if jdx > next_left_idx]
+        next_left_len = min(combined)
+        next_left = int(ss[next_left_idx:next_left_len])
+
+    # find idx of next number to right
+    next_right_list = [jdx for jdx in numbers if jdx > explode_end]
+    next_right_idx = next_right_list[0] if next_right_list else None
+    next_right = None
+    if next_right_idx is not None:
+        combined = [jdx for jdx in non_numbers if jdx > next_right_idx]
+        next_right_len = min(combined)
+        next_right = int(ss[next_right_idx:next_right_len])
+
+    print(f"next left: {next_left}  next right: {next_right}")
+
+
     return pair.INTINT(-99, -99)
 
 
@@ -129,7 +188,11 @@ def main():
             pair = parse_string(tmp)
 
             # testing magnitude
-            print(f"magnitude {pair.to_string} = {pair.magnitude}")
+            # print(f"magnitude {pair.to_string} = {pair.magnitude}")
+
+            # testing explode
+            print(f"explode {pair.to_string} = {snail_explode(pair).to_string}")
+
 
             # if snail_sum is None:
             #     snail_sum = pair
